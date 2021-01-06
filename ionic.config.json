@@ -1,0 +1,7 @@
+{
+  "name": "chainApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
