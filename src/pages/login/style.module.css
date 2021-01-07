@@ -1,0 +1,29 @@
+.input {
+  margin-top: 14px;
+  border: 2px solid #73a5d6;
+  border-radius: 50px;
+  color: #2c4258;
+}
+
+.input input {
+  margin: 3px;
+}
+
+.btn {
+  margin-top: 50px;
+}
+
+.link {
+  font-size: 12px;
+  text-align: center;
+  color: #3128af;
+}
+
+.card-body {
+  border-top: 2px solid #73a5d6;
+  position: relative;
+  margin-top: -30px;
+  border-radius: 15px 15px 0 0;
+  padding: 2rem 1rem;
+  background-color: white;
+}
