@@ -37,3 +37,10 @@
 .content-center {
   margin: 10px 35%;
 }
+
+.content-center-imei {
+  margin: 10px 20%;
+}
+.content-center-imei-inactive {
+  margin: 10px 10%;
+}

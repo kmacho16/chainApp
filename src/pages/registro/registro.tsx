@@ -5,27 +5,26 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import {
   IonContent,
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonButton,
   IonImg,
   IonInput,
   IonAlert,
   NavContext,
   IonIcon,
-  IonItem,
   IonChip,
   IonLabel
 } from '@ionic/react';
 import style from './style.module.css';
-import { star, qrCode, pin, close, lockClosed } from 'ionicons/icons';
+import { qrCode, lockClosed, closeCircle } from 'ionicons/icons';
+import { userRegister, validateHash } from '../../services/services';
+import { Auth } from '../../model/auth';
 
 const Registro: FC = () => {
   const [showAlert, setShowAlert] = useState<boolean>(true);
-  const [active, setActive] = useState<boolean>(true);
+  const [active, setActive] = useState<boolean>(false);
   const [username, setUsername] = useState<string>();
   const [email, setEmail] = useState<string>();
+  const [uid, setUid] = useState<string>();
   const [password, setPassword] = useState<string>();
   const { navigate } = useContext(NavContext);
 
@@ -33,28 +32,70 @@ const Registro: FC = () => {
     const data = await BarcodeScanner.scan();
     if (data) {
       setShowAlert(false);
+      const hash = data.text.split(':')[0];
       const date = new Date(data.text.split(':')[1]);
       const myDate = new Date();
       if (date > myDate) {
-        changeData();
+        validateHash(hash).then(response => {
+          if (response['continue']) {
+            changeData();
+          } else {
+            setActive(false);
+            setShowAlert(true);
+          }
+        });
       } else {
         setShowAlert(true);
       }
     } else {
       setShowAlert(true);
     }
-
-    console.log(`Barcode data: ${data.text}`);
   };
   const redirect = useCallback(() => navigate('/login', 'back'), [navigate]);
 
   const changeData = async () => {
     const uid = await UniqueDeviceID.get();
     if (uid) {
-      setUsername(uid);
-      console.log('Cambio de data', uid);
-      setActive(!active);
+      setUid(uid);
+      setActive(true);
     }
+  };
+  const showRender = () => {
+    if (active) {
+      return (
+        <IonChip
+          outline
+          color="secondary"
+          className={`${style['content-center-imei']}`}
+        >
+          <IonIcon icon={lockClosed} color="secondary" />
+          <IonLabel>Huella celular capturada</IonLabel>
+        </IonChip>
+      );
+    } else {
+      return (
+        <IonChip
+          outline
+          color="danger"
+          className={`${style['content-center-imei-inactive']}`}
+        >
+          <IonIcon icon={closeCircle} color="danger" />
+          <IonLabel>Aún no se tiene registro del telefono</IonLabel>
+        </IonChip>
+      );
+    }
+  };
+
+  const registerData = () => {
+    const auth: Auth = {
+      email: email!,
+      password: password!,
+      username: username!,
+      uid: uid!
+    };
+    userRegister(auth).then((d: any) => {
+      console.log(d);
+    });
   };
   return (
     <IonPage>
@@ -89,45 +130,39 @@ const Registro: FC = () => {
         <div className={`${style['card-body']}`}>
           <IonInput
             className={
-              active ? `${style['input-inactive']}` : `${style['input']}`
+              active ? `${style['input']}` : `${style['input-inactive']}`
             }
             value={email}
-            disabled={active}
+            disabled={!active}
             placeholder="Email"
             onIonChange={e => setEmail(e.detail.value!)}
           ></IonInput>
           <IonInput
             className={
-              active ? `${style['input-inactive']}` : `${style['input']}`
+              active ? `${style['input']}` : `${style['input-inactive']}`
             }
             value={username}
-            disabled={active}
+            disabled={!active}
             placeholder="Username"
             onIonChange={e => setUsername(e.detail.value!)}
           ></IonInput>
           <IonInput
             className={
-              active ? `${style['input-inactive']}` : `${style['input']}`
+              active ? `${style['input']}` : `${style['input-inactive']}`
             }
             value={password}
-            disabled={active}
+            disabled={!active}
             type="password"
             placeholder="Password"
             onIonChange={e => setPassword(e.detail.value!)}
           ></IonInput>
-          <IonChip
-            outline
-            color="secondary"
-            className={`${style['content-center']}`}
-          >
-            <IonIcon icon={lockClosed} color="secondary" />
-            <IonLabel>Icon Chip</IonLabel>
-          </IonChip>
+          {showRender()}
           <IonButton
-            disabled={active}
+            disabled={!active}
             className={`${style['btn']}`}
             color="primary"
             expand="block"
+            onClick={registerData}
           >
             Registrar
           </IonButton>
