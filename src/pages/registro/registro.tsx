@@ -12,7 +12,8 @@ import {
   NavContext,
   IonIcon,
   IonChip,
-  IonLabel
+  IonLabel,
+  IonLoading
 } from '@ionic/react';
 import style from './style.module.css';
 import { qrCode, lockClosed, closeCircle } from 'ionicons/icons';
@@ -27,16 +28,19 @@ const Registro: FC = () => {
   const [uid, setUid] = useState<string>();
   const [password, setPassword] = useState<string>();
   const { navigate } = useContext(NavContext);
+  const [showLoading, setShowLoading] = useState<boolean>(false);
 
   const openScanner = async () => {
     const data = await BarcodeScanner.scan();
     if (data) {
+      setShowLoading(true);
       setShowAlert(false);
       const hash = data.text.split(':')[0];
       const date = new Date(data.text.split(':')[1]);
       const myDate = new Date();
       if (date > myDate) {
         validateHash(hash).then(response => {
+          setShowLoading(false);
           if (response['continue']) {
             changeData();
           } else {
@@ -100,6 +104,13 @@ const Registro: FC = () => {
   return (
     <IonPage>
       <IonContent>
+        <IonLoading
+          cssClass="my-custom-class"
+          isOpen={showLoading}
+          onDidDismiss={() => setShowLoading(false)}
+          message={''}
+          spinner="crescent"
+        ></IonLoading>
         <IonAlert
           header={'Aviso'}
           isOpen={showAlert}

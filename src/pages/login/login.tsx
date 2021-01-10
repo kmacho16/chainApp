@@ -8,7 +8,6 @@ import {
   NavContext
 } from '@ionic/react';
 import style from './style.module.css';
-
 const Login: FC = () => {
   const { navigate } = useContext(NavContext);
   const [username, setusername] = useState<string>();
