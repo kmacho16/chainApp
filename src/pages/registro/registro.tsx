@@ -19,16 +19,19 @@ import style from './style.module.css';
 import { qrCode, lockClosed, closeCircle } from 'ionicons/icons';
 import { userRegister, validateHash } from '../../services/services';
 import { Auth } from '../../model/auth';
+import AlertComponent from '../../components/AlertComponent/AlertComponent';
 
 const Registro: FC = () => {
-  const [showAlert, setShowAlert] = useState<boolean>(true);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
   const [active, setActive] = useState<boolean>(false);
   const [username, setUsername] = useState<string>();
   const [email, setEmail] = useState<string>();
   const [uid, setUid] = useState<string>();
   const [password, setPassword] = useState<string>();
-  const { navigate } = useContext(NavContext);
   const [showLoading, setShowLoading] = useState<boolean>(false);
+  const [modalMessage, setModalMessage] = useState<String>();
+  const [showMoldalMessage, setShowMoldalMessage] = useState<boolean>(true);
+  const { navigate } = useContext(NavContext);
 
   const openScanner = async () => {
     const data = await BarcodeScanner.scan();
@@ -91,6 +94,7 @@ const Registro: FC = () => {
   };
 
   const registerData = () => {
+    setShowLoading(true);
     const auth: Auth = {
       email: email!,
       password: password!,
@@ -98,12 +102,21 @@ const Registro: FC = () => {
       uid: uid!
     };
     userRegister(auth).then((d: any) => {
-      console.log(d);
+      setShowMoldalMessage(true);
+      setModalMessage(
+        'Gracias, su usuario sera activado en un plazo maximo de 24 horas'
+      );
+      setShowLoading(false);
     });
   };
   return (
     <IonPage>
       <IonContent>
+        <AlertComponent
+          active={showMoldalMessage}
+          message={modalMessage}
+          action={redirect}
+        ></AlertComponent>
         <IonLoading
           cssClass="my-custom-class"
           isOpen={showLoading}

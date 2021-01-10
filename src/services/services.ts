@@ -1,7 +1,9 @@
 import { Auth } from '../model/auth';
 
+const BASE_URL = 'http://192.168.1.54:5001';
+
 const userRegister = (data: Auth) => {
-  return fetch('http://192.168.1.54:5001/register/user', {
+  return fetch(`${BASE_URL}/register/user`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -17,7 +19,7 @@ const userRegister = (data: Auth) => {
 };
 
 const validateHash = (hash: string) => {
-  return fetch(`http://192.168.1.54:5001/validate/${hash}`, {
+  return fetch(`${BASE_URL}/validate/${hash}`, {
     method: 'GET'
   })
     .then(response => {
@@ -28,4 +30,20 @@ const validateHash = (hash: string) => {
     });
 };
 
-export { userRegister, validateHash };
+const loginUser = (data: Auth) => {
+  return fetch(`${BASE_URL}/login`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(data => {
+      return data.json();
+    })
+    .catch(error => {
+      console.error('ERROR', error);
+    });
+};
+
+export { userRegister, validateHash, loginUser };
