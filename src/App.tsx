@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -23,17 +23,26 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import Login from './pages/login';
 import Registro from './pages/registro';
+import Principal from './pages/principal/Principal';
+import GuardedRoute from './components/GuardedRoute/GuardedRoute';
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/login" component={Login} exact={true} />
-        <Route path="/registro" component={Registro} exact={true} />
-        <Route exact path="/" render={() => <Redirect to="/login" />} />
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  useEffect(() => {
+    setIsAuthenticated(localStorage.getItem('token') ? false : true);
+  });
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/principal" component={Principal} />
+          <Route path="/login" component={Login} exact={true} />
+          <Route path="/registro" component={Registro} exact={true} />
+          <Route exact path="/" render={() => <Redirect to="/login" />} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  );
+};
 
 export default App;

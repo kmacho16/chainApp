@@ -22,10 +22,15 @@ const Login: FC = () => {
   const [modalMessage, setModalMessage] = useState<String>();
   const [showMoldalMessage, setShowMoldalMessage] = useState<boolean>(false);
 
-  const redirect = useCallback(() => navigate('/registro', 'back'), [navigate]);
+  const redirectRegistro = useCallback(() => navigate('/registro', 'back'), [
+    navigate
+  ]);
+  const redirectPrincipal = useCallback(() => navigate('/principal', 'back'), [
+    navigate
+  ]);
 
   const getUid = async () => {
-    const uid = await UniqueDeviceID.get();
+    const uid = '12a51da51da5da5da11d15aa2'; //await UniqueDeviceID.get();
     setUid(uid);
     return uid;
   };
@@ -42,8 +47,10 @@ const Login: FC = () => {
         .then(response => {
           setShowLoading(false);
           if (response['continue']) {
+            localStorage.setItem('token', response['token']);
             setModalMessage('Logueado con exito');
             setShowMoldalMessage(true);
+            redirectPrincipal();
           } else {
             setModalMessage(response['message']);
             setShowMoldalMessage(true);
@@ -104,7 +111,7 @@ const Login: FC = () => {
           <p
             className={`${style['link']}`}
             onClick={e => {
-              redirect();
+              redirectRegistro();
             }}
           >
             Crear Cuenta

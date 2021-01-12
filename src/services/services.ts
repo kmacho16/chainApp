@@ -1,6 +1,6 @@
 import { Auth } from '../model/auth';
 
-const BASE_URL = 'http://192.168.1.54:5001';
+const BASE_URL = 'http://192.168.1.60:5001';
 
 const userRegister = (data: Auth) => {
   return fetch(`${BASE_URL}/register/user`, {
@@ -46,4 +46,20 @@ const loginUser = (data: Auth) => {
     });
 };
 
-export { userRegister, validateHash, loginUser };
+const changeStateLed = (state: number) => {
+  const token = localStorage.getItem('token');
+  return fetch(`${BASE_URL}/change_led_status/${state}`, {
+    method: 'POST',
+    headers: {
+      Authorization: token!
+    }
+  })
+    .then(data => {
+      return data.json();
+    })
+    .catch(error => {
+      console.error('ERROR', error);
+    });
+};
+
+export { userRegister, validateHash, loginUser, changeStateLed };
